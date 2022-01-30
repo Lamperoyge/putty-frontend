@@ -8,7 +8,7 @@ const Container = styled.nav`
 export const Header = () => {
   //   return (
   //     <Container>
-  //       <Title>Backspread</Title>
+  //       <Title>Putty</Title>
   //     </Container>
   //   );
 };

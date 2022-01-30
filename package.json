@@ -1,5 +1,5 @@
 {
-  "name": "backspread-frontend",
+  "name": "putty-frontend",
   "private": true,
   "scripts": {
     "dev": "next dev",

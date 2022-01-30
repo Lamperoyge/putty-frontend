@@ -49,7 +49,7 @@ export const Landing = () => {
   return (
     <div>
       <Head>
-        <title>Backspread</title>
+        <title>Putty</title>
         <meta
           name="description"
           content="An option market to trade erc20 tokens and nfts"
@@ -59,7 +59,7 @@ export const Landing = () => {
 
       <Container>
         <div className="header">
-          <Title>Backspread</Title>
+          <Title>Putty</Title>
           <Button>Open App (Coming Soon)</Button>
         </div>
 
