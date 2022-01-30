@@ -2,6 +2,7 @@ import Head from "next/head";
 import { Title } from "../core/Title";
 import styled from "styled-components";
 import { Button } from "../core/Button";
+import Link from "next/link";
 
 const SubtitleContainer = styled.h3`
   font-weight: bold;
@@ -46,7 +47,6 @@ const Container = styled.main`
 `;
 
 export const Landing = () => {
-  // test
   return (
     <div>
       <Head>
@@ -61,7 +61,10 @@ export const Landing = () => {
       <Container>
         <div className="header">
           <Title>Putty</Title>
-          <Button>Open App (Coming Soon)</Button>
+
+          <Link href="/app">
+            <Button>Open App (Coming Soon)</Button>
+          </Link>
         </div>
 
         <SubtitleContainer>
