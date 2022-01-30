@@ -71,7 +71,7 @@ export const Landing = () => {
         <ColorGradientContainer>
           {["#4CC9F0", "#4895EF", "#4361EE", "#3F37C9", "#3A0CA3"].map(
             (color) => (
-              <div style={{ backgroundColor: color }} />
+              <div style={{ backgroundColor: color }} key={color} />
             )
           )}
         </ColorGradientContainer>

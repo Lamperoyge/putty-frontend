@@ -27,7 +27,7 @@ export const Footer = () => {
           { link: "https://discord.gg/2RUdbC9c", name: "Discord" },
           { link: "https://medium.com/@outdoteth", name: "Medium" },
         ].map(({ link, name }) => (
-          <a target="_blank" href={link}>
+          <a target="_blank" rel="noreferrer" href={link} key={name}>
             {name}
           </a>
         ))}
