@@ -14,11 +14,16 @@ const Container = styled.div`
   height: fit-content;
   padding: 12px;
   box-shadow: 0px 0px 19px 6px rgba(0, 0, 0, 0.18);
+  max-width: 100%;
 
   .title-container {
     margin-bottom: 24px;
     display: flex;
     justify-content: space-between;
+
+    h1 {
+      margin-right: 48px;
+    }
 
     img {
       cursor: pointer;

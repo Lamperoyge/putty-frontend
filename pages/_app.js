@@ -47,6 +47,7 @@ function MyApp({ Component, pageProps }) {
     secondary: "#3A0CA3",
     tertiary: "#4895EF",
     grey: "#666666",
+    lightGrey: "#c9c9c9",
   };
 
   return (

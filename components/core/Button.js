@@ -4,7 +4,8 @@ export const Button = styled.button`
   padding: 12px 24px;
   color: white;
   border: none;
-  background-color: ${({ theme }) => theme.primary};
+  background-color: ${({ theme, secondary }) =>
+    secondary ? theme.secondary : theme.primary};
   border-radius: 8px;
   font-size: inherit;
   height: fit-content;

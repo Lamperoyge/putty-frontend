@@ -7,12 +7,14 @@ import { Title } from "../core/Title";
 import { Modal } from "./Modal";
 
 const Container = styled.nav`
-  padding: 24px;
   display: flex;
   justify-content: space-between;
   position: sticky;
+  padding-top: 48px;
+  padding-bottom: 12px;
   top: 0;
   background-color: white;
+  height: fit-content;
 `;
 
 const ConnectButtonContainer = styled.div`

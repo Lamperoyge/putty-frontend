@@ -1,9 +1,14 @@
 import Head from "next/head";
 import styled from "styled-components";
-import { Header } from "../layout/Header";
+import { Header } from "../../layout/Header";
+import { InputBar } from "./InputBar";
 
 const Container = styled.main`
   min-height: 100vh;
+  padding: 0px 48px;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  row-gap: 48px;
 `;
 
 export const App = () => {
@@ -20,7 +25,7 @@ export const App = () => {
 
       <Container>
         <Header />
-        <div>Coming soon...</div>
+        <InputBar />
       </Container>
     </div>
   );
