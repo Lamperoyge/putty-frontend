@@ -23,7 +23,7 @@ export const Footer = () => {
     <Container>
       <div className="socials">
         {[
-          { link: "https://twitter.com/backspreadxyz", name: "Twitter" },
+          { link: "https://twitter.com/puttyfi", name: "Twitter" },
           { link: "https://discord.gg/TScUmZYw", name: "Discord" },
           { link: "https://medium.com/@outdoteth", name: "Medium" },
         ].map(({ link, name }) => (
