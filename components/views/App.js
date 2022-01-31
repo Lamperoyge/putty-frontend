@@ -20,7 +20,7 @@ export const App = () => {
 
       <Container>
         <Header />
-        <div>market stuff</div>
+        <div>Coming soon...</div>
       </Container>
     </div>
   );
