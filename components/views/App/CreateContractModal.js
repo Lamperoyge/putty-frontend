@@ -11,6 +11,10 @@ import Image from "next/image";
 import { NftInputModal } from "../../core/NftInputModal";
 import { FetchWrapper } from "use-nft";
 import { ethers } from "ethers";
+import { useConnect } from "wagmi";
+import { ConnectWalletButton } from "../../core/ConnectWalletButton";
+import { ApproveButton } from "../../core/ApproveButton";
+import contracts from "../../../contracts.json";
 
 const Container = styled.div`
   width: 500px;
@@ -280,17 +284,13 @@ export const CreateContractModal = ({ isShown, onClose }) => {
   const [strikePrice, setStrikePrice] = useState();
   const [premiumPrice, setPremiumPrice] = useState();
   const [duration, setDuration] = useState();
+  const [{ data }] = useConnect();
   const [
     underlyingAssets,
     addUnderlyingAsset,
     removeUnderlyingAsset,
     updateUnderlyingAsset,
   ] = useUnderlyingAssets();
-
-  // duration - number
-  // strike price - number
-  // premium - number
-  // underlying assets - struct
 
   return (
     <Modal
@@ -364,7 +364,20 @@ export const CreateContractModal = ({ isShown, onClose }) => {
           assets for <b>{strikePrice} ETH</b> within <b>{duration} days</b>
         </InformationContainer>
 
-        <Button>Create Put Contract</Button>
+        {!data?.connected ? (
+          <ConnectWalletButton />
+        ) : (
+          <ApproveButton
+            tokens={[
+              {
+                address: contracts.contracts.WETH9.address,
+                type: "ERC20",
+              },
+            ]}
+          >
+            Create Put Contract
+          </ApproveButton>
+        )}
       </Container>
     </Modal>
   );

@@ -10,6 +10,7 @@ import "../styles/globals.css";
 import { defaultChains } from "wagmi";
 import { chain } from "wagmi";
 import { TokenListProvider } from "../context/TokenListContext";
+import { providers } from "ethers";
 
 // API key for Ethereum node
 const infuraId = process.env.INFURA_ID;
@@ -42,6 +43,15 @@ const connectors = ({ chainId }) => {
   ];
 };
 
+const provider = ({ chainId }) => {
+  console.log(chain.hardhat, process.env.NEXT_PUBLIC_CHAIN_ID);
+  if (process.env.NEXT_PUBLIC_CHAIN_ID == chain.hardhat.id) {
+    return new providers.JsonRpcProvider("http://localhost:8545");
+  }
+
+  return new providers.InfuraProvider(chainId, "Your infura id");
+};
+
 function MyApp({ Component, pageProps }) {
   const theme = {
     primary: "#F72585",
@@ -52,7 +62,7 @@ function MyApp({ Component, pageProps }) {
   };
 
   return (
-    <Provider connectors={connectors}>
+    <Provider connectors={connectors} provider={provider}>
       <TokenListProvider>
         <ThemeProvider theme={theme}>
           <Container>
