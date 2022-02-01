@@ -21,7 +21,10 @@ export const InputBar = () => {
         Create Put Contract
       </Button>
 
-      <CreateContractModal isShown={showModal} />
+      <CreateContractModal
+        onClose={() => setShowModal(false)}
+        isShown={showModal}
+      />
     </Container>
   );
 };

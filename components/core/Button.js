@@ -6,7 +6,7 @@ export const Button = styled.button`
   border: none;
   background-color: ${({ theme, secondary }) =>
     secondary ? theme.secondary : theme.primary};
-  border-radius: 8px;
+  border-radius: 3px;
   font-size: inherit;
   height: fit-content;
   cursor: pointer;

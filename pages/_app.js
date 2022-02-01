@@ -9,6 +9,7 @@ import { Header } from "../components/layout/Header";
 import "../styles/globals.css";
 import { defaultChains } from "wagmi";
 import { chain } from "wagmi";
+import { TokenListProvider } from "../context/TokenListContext";
 
 // API key for Ethereum node
 const infuraId = process.env.INFURA_ID;
@@ -52,12 +53,14 @@ function MyApp({ Component, pageProps }) {
 
   return (
     <Provider connectors={connectors}>
-      <ThemeProvider theme={theme}>
-        <Container>
-          <Component {...pageProps} />
-          <Footer />
-        </Container>
-      </ThemeProvider>
+      <TokenListProvider>
+        <ThemeProvider theme={theme}>
+          <Container>
+            <Component {...pageProps} />
+            <Footer />
+          </Container>
+        </ThemeProvider>
+      </TokenListProvider>
     </Provider>
   );
 }
