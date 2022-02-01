@@ -169,7 +169,7 @@ const UnderlyingAssetInput = ({ value, removeUnderlyingAsset, onChange }) => {
   const [nftImageSrc, setNftImageSrc] = useState();
 
   useEffect(async () => {
-    if (value?.type === "ERC721") {
+    if (value?.type === "ERC721" && value?.selectedAsset) {
       const fetcher = ["ethers", { provider: ethers.getDefaultProvider() }];
 
       const fetchWrapper = new FetchWrapper(fetcher);
@@ -188,7 +188,12 @@ const UnderlyingAssetInput = ({ value, removeUnderlyingAsset, onChange }) => {
       <div className="erc20-input">
         {value?.selectedAsset ? (
           <Button secondary onClick={() => setIsShown(true)}>
-            <img src={value.selectedAsset.logoURI} height={25} width={25} />
+            <img
+              alt={"logo"}
+              src={value.selectedAsset.logoURI}
+              height={25}
+              width={25}
+            />
             {value.selectedAsset.symbol}
           </Button>
         ) : (
@@ -207,7 +212,7 @@ const UnderlyingAssetInput = ({ value, removeUnderlyingAsset, onChange }) => {
         />
 
         <div className="bin" onClick={() => removeUnderlyingAsset(value.id)}>
-          <Image src="/bin.svg" height={30} width={30} />
+          <Image alt={"delete"} src="/bin.svg" height={30} width={30} />
         </div>
 
         <TokenInputModal
@@ -224,7 +229,12 @@ const UnderlyingAssetInput = ({ value, removeUnderlyingAsset, onChange }) => {
       <div className="erc721-input">
         {value?.selectedAsset ? (
           <Button secondary onClick={() => setIsShown(true)}>
-            <img src={value.selectedAsset.logoURI} height={25} width={25} />
+            <img
+              alt={"logo"}
+              src={value.selectedAsset.logoURI}
+              height={25}
+              width={25}
+            />
             {value.selectedAsset.name}
           </Button>
         ) : (
@@ -242,10 +252,15 @@ const UnderlyingAssetInput = ({ value, removeUnderlyingAsset, onChange }) => {
           }}
         />
 
-        <img className="nft-picture" src={nftImageSrc} height={50} />
+        <img
+          alt={"nft-picture"}
+          className="nft-picture"
+          src={nftImageSrc}
+          height={50}
+        />
 
         <div className="bin" onClick={() => removeUnderlyingAsset(value.id)}>
-          <Image src="/bin.svg" height={30} width={30} />
+          <Image alt={"delete"} src="/bin.svg" height={30} width={30} />
         </div>
 
         <NftInputModal

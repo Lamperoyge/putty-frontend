@@ -45,9 +45,20 @@ const AccountContainer = styled.div`
 `;
 
 const icons = {
-  injected: <Image src="/metamask.svg" height={30} width={30} />,
-  walletConnect: <Image src="/walletconnect.svg" height={30} width={30} />,
-  walletLink: <Image src="/walletlink.svg" height={30} width={30} />,
+  injected: (
+    <Image alt={"metamask"} src="/metamask.svg" height={30} width={30} />
+  ),
+  walletConnect: (
+    <Image
+      alt={"walletconnect"}
+      src="/walletconnect.svg"
+      height={30}
+      width={30}
+    />
+  ),
+  walletLink: (
+    <Image alt={"walletlink"} src="/walletlink.svg" height={30} width={30} />
+  ),
 };
 
 export const Header = () => {

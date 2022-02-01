@@ -52,7 +52,13 @@ export const Modal = ({ isShown, children, title, onClose }) => {
         <Container onClick={(e) => e.stopPropagation()}>
           <div className="title-container">
             <Title>{title}</Title>
-            <Image src="/cross.svg" height={30} width={30} onClick={onClose} />
+            <Image
+              alt={"close modal"}
+              src="/cross.svg"
+              height={30}
+              width={30}
+              onClick={onClose}
+            />
           </div>
           {children}
         </Container>

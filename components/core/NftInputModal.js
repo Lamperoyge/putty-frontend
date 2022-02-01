@@ -48,6 +48,7 @@ export const NftInputModal = ({ isShown, onChange, onClose }) => {
 
   const setDebounceSearchTerm = useCallback(debounce(setSearchTerm, 50), [
     setSearchTerm,
+    debounce,
   ]);
 
   const filteredTokens = useMemo(() => {
@@ -75,6 +76,7 @@ export const NftInputModal = ({ isShown, onChange, onClose }) => {
           {filteredTokens &&
             filteredTokens.slice(0, amountToShow).map((token) => (
               <div
+                key={`${token.address}${token.symbol}`}
                 onClick={() => {
                   onChange(token);
                   onClose();
@@ -84,6 +86,7 @@ export const NftInputModal = ({ isShown, onChange, onClose }) => {
                   {token.name} {token.symbol ? `(${token.symbol})` : null}
                 </div>
                 <img
+                  alt={token.name}
                   src={token.logoURI}
                   height={30}
                   width={30}

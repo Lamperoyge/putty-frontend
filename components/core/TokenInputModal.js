@@ -73,6 +73,7 @@ export const TokenInputModal = ({ isShown, onChange, onClose }) => {
           {filteredTokens &&
             filteredTokens.slice(0, amountToShow).map((token) => (
               <div
+                key={`${token.address}${token.symbol}`}
                 onClick={() => {
                   onChange(token);
                   onClose();
@@ -82,6 +83,7 @@ export const TokenInputModal = ({ isShown, onChange, onClose }) => {
                   {token.name} ({token.symbol})
                 </div>
                 <img
+                  alt={token.name}
                   src={token.logoURI}
                   height={30}
                   width={30}

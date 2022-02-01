@@ -62,7 +62,7 @@ export const Landing = () => {
         <div className="header">
           <Title>Putty</Title>
 
-          <Link href="/app">
+          <Link href="/app" passHref>
             <Button>Open App (Coming Soon)</Button>
           </Link>
         </div>
