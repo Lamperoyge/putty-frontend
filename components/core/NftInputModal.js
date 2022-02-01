@@ -76,7 +76,7 @@ export const NftInputModal = ({ isShown, onChange, onClose }) => {
           {filteredTokens &&
             filteredTokens.slice(0, amountToShow).map((token) => (
               <div
-                key={`${token.address}${token.symbol}`}
+                key={token.id}
                 onClick={() => {
                   onChange(token);
                   onClose();

@@ -1,5 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 
+import { v4 as uuidv4 } from "uuid";
 export const TokenListContext = createContext();
 
 export const TokenListProvider = ({ children }) => {
@@ -9,11 +10,13 @@ export const TokenListProvider = ({ children }) => {
   useEffect(() => {
     fetch("https://tokens.coingecko.com/uniswap/all.json")
       .then((res) => res.json())
-      .then((res) => setTokenList(res.tokens))
+      .then((res) =>
+        setTokenList(res.tokens.map((t) => ({ ...t, id: uuidv4() })))
+      )
       .catch(console.error);
 
     import("./nft-token-list.json").then((res) =>
-      setNftCollections(res.tokens)
+      setNftCollections(res.tokens.map((t) => ({ ...t, id: uuidv4() })))
     );
   }, []);
 
