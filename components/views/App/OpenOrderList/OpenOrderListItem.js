@@ -1,4 +1,8 @@
+import humanizeDuration from "humanize-duration";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import { TokenListContext } from "../../../../context/TokenListContext";
+import { shortHumanizeDuration } from "../../../../utils/shortHumanizeDuration";
 
 const Container = styled.div`
   padding: 24px;
@@ -35,7 +39,7 @@ const Container = styled.div`
   .assets-list {
     display: grid;
     row-gap: 6px;
-    width: 140px;
+    width: 200px;
     height: fit-content;
 
     .content {
@@ -44,7 +48,7 @@ const Container = styled.div`
   }
 
   .meta-info {
-    width: 180px;
+    width: 150px;
     height: 100%;
     max-height: 100px;
     display: grid;
@@ -56,15 +60,57 @@ const Container = styled.div`
 `;
 
 export const OpenOrderListItem = ({ order }) => {
+  const { fetchWrapper, tokenList } = useContext(TokenListContext);
+  const [nftImages, setNftImages] = useState();
+  const [erc20Images, setErc20Images] = useState();
+
+  useEffect(() => {
+    const fetchNftImages = async () => {
+      console.log(order.erc721UnderlyingMetaInfo);
+      const nftImages = await Promise.all(
+        order.erc721UnderlyingMetaInfo.map(({ address, tokenId }) =>
+          fetchWrapper.fetchNft(address, tokenId).then(({ image }) => image)
+        )
+      );
+
+      setNftImages(nftImages);
+    };
+
+    fetchNftImages();
+  }, [order]);
+
   return (
     <Container>
-      <div className="images">
-        <img src="/metamask.svg" alt="" height={50} width={50} />
+      <div className="image">
+        {nftImages?.map((image, i) => (
+          <img src={image} key={i} height={50} width={50} alt={"nft-image"} />
+        ))}
+
+        {order.erc20UnderlyingMetaInfo?.map(({ logoURI }, i) => (
+          <img
+            src={logoURI}
+            key={i}
+            height={50}
+            width={50}
+            alt={"erc20-image"}
+          />
+        ))}
       </div>
 
       <div className="assets-list">
         <div className="title">Assets</div>
-        <div className="content">1 CryptoPunk, 87128 UNI</div>
+        <div className="content">
+          {order.erc721UnderlyingMetaInfo
+            .map(({ name, symbol }) => `1 ${symbol || name}`)
+            .concat(
+              order.erc20UnderlyingMetaInfo.map(
+                ({ symbol, amount }) => `${amount} ${symbol}`
+              )
+            )
+            .map((txt, i) => (
+              <div key={i}>{txt}</div>
+            ))}
+        </div>
       </div>
 
       <div className="meta-info">
@@ -74,7 +120,9 @@ export const OpenOrderListItem = ({ order }) => {
 
       <div className="meta-info">
         <div className="title">Duration</div>
-        <div className="meta-text">4656 Days</div>
+        <div className="meta-text">
+          {Math.floor(order.duration / (24 * 60 * 60))} Days
+        </div>
       </div>
 
       <div className="meta-info">
@@ -82,13 +130,17 @@ export const OpenOrderListItem = ({ order }) => {
         <div className="meta-text">{order.premium} ETH</div>
       </div>
       <div className="meta-info">
-        <div className="title">Creation Date</div>
-        <div className="meta-text">19/09 08:47</div>
+        <div className="title">Creation</div>
+        <div className="meta-text">
+          {new Date(order.creationTimestamp || 0).toLocaleTimeString()}
+        </div>
       </div>
 
       <div className="meta-info">
         <div className="title">Expires in</div>
-        <div className="meta-text">196d 4h 31m</div>
+        <div className="meta-text">
+          {shortHumanizeDuration(order.expiration - new Date().getTime())}
+        </div>
       </div>
     </Container>
   );

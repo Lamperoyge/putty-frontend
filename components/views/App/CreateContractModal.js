@@ -1,7 +1,7 @@
 import { Input } from "../../core/Input";
 import { Modal } from "../../layout/Modal";
 import styled from "styled-components";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Button } from "../../core/Button";
 import { Title } from "../../core/Title";
 import { v4 as uuidv4 } from "uuid";
@@ -15,6 +15,7 @@ import { ConnectWalletButton } from "../../core/ConnectWalletButton";
 import { ApproveButton } from "../../core/ApproveButton";
 import contracts from "../../../contracts.json";
 import { usePutOption } from "../../../hooks/usePutOption";
+import { TokenListContext } from "../../../context/TokenListContext";
 
 const Container = styled.div`
   width: 500px;
@@ -171,13 +172,10 @@ const useUnderlyingAssets = () => {
 const UnderlyingAssetInput = ({ value, removeUnderlyingAsset, onChange }) => {
   const [isShown, setIsShown] = useState(false);
   const [nftImageSrc, setNftImageSrc] = useState();
+  const { fetchWrapper } = useContext(TokenListContext);
 
   useEffect(async () => {
-    if (value?.type === "ERC721" && value?.selectedAsset) {
-      const fetcher = ["ethers", { provider: ethers.getDefaultProvider() }];
-
-      const fetchWrapper = new FetchWrapper(fetcher);
-
+    if (value?.type === "ERC721" && value?.selectedAsset && fetchWrapper) {
       const result = await fetchWrapper.fetchNft(
         value.selectedAsset.address,
         value.tokenId || 1
@@ -185,7 +183,7 @@ const UnderlyingAssetInput = ({ value, removeUnderlyingAsset, onChange }) => {
 
       setNftImageSrc(result.image);
     }
-  }, [value]);
+  }, [value, fetchWrapper]);
 
   if (value.type === "ERC20") {
     return (
