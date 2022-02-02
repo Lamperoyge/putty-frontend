@@ -7,11 +7,12 @@ import { useState } from "react";
 import debounce from "debounce";
 import { TokenListContext } from "../../context/TokenListContext";
 import { Button } from "./Button";
+import { useDebounce } from "use-debounce";
 
 const Container = styled.div`
   display: grid;
   row-gap: 24px;
-  width: 400px;
+  width: 500px;
 
   .tokens-list {
     display: grid;
@@ -23,6 +24,8 @@ const Container = styled.div`
       font-weight: bold;
       padding: 12px;
       border-radius: 3px;
+      overflow-wrap: break-word;
+      word-break: break-word;
       &:hover {
         background-color: ${({ theme }) => theme.lightGrey};
         cursor: pointer;
@@ -39,52 +42,50 @@ const Container = styled.div`
   }
 `;
 
-export const TokenInputModal = ({ isShown, onChange, onClose }) => {
-  const { tokenList: tokens } = useContext(TokenListContext);
+export const NftCollectionInput = ({ isShown, onChange, onClose }) => {
+  const { nftCollections } = useContext(TokenListContext);
   const [amountToShow, setAmountToShow] = useState(100);
-  const [searchTerm, setSearchTerm] = useState();
+  const [_searchTerm, setSearchTerm] = useState();
+  const [searchTerm] = useDebounce(_searchTerm, 50);
 
-  const setDebounceSearchTerm = useCallback(debounce(setSearchTerm, 50), [
-    setSearchTerm,
-  ]);
-
-  const filteredTokens = useMemo(() => {
-    return tokens?.filter(({ address, name, symbol }) =>
+  const filteredNftCollections = useMemo(() => {
+    return nftCollections?.filter(({ address, name, symbol }) =>
       [address, name, symbol].some(
         (v) =>
-          !searchTerm || v.toLowerCase().startsWith(searchTerm.toLowerCase())
+          !searchTerm || v?.toLowerCase().startsWith(searchTerm.toLowerCase())
       )
     );
-  }, [searchTerm, tokens]);
+  }, [searchTerm]);
 
   useEffect(() => {
     setAmountToShow(100);
   }, [isShown]);
 
   return (
-    <Modal isShown={isShown} title={"Select a token"} onClose={onClose}>
+    <Modal isShown={isShown} title={"Select a collection"} onClose={onClose}>
       <Container>
         <Input
           placeholder="Search for address, name or symbol"
-          onChange={(e) => setDebounceSearchTerm(e.target.value)}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
 
         <div className="tokens-list">
-          {filteredTokens &&
-            filteredTokens.slice(0, amountToShow).map((token) => (
+          {filteredNftCollections &&
+            filteredNftCollections.slice(0, amountToShow).map((collection) => (
               <div
-                key={token.id}
+                key={collection.id}
                 onClick={() => {
-                  onChange(token);
+                  onChange(collection);
                   onClose();
                 }}
               >
                 <div>
-                  {token.name} ({token.symbol})
+                  {collection.name}{" "}
+                  {collection.symbol ? `(${collection.symbol})` : null}
                 </div>
                 <img
-                  alt={token.name}
-                  src={token.logoURI}
+                  alt={collection.name}
+                  src={collection.logoURI}
                   height={30}
                   width={30}
                   loading="lazy"
@@ -93,12 +94,14 @@ export const TokenInputModal = ({ isShown, onChange, onClose }) => {
             ))}
         </div>
 
-        <Button
-          className="show-more"
-          onClick={() => setAmountToShow(amountToShow + 100)}
-        >
-          Show more
-        </Button>
+        {!searchTerm && (
+          <Button
+            className="show-more"
+            onClick={() => setAmountToShow(amountToShow + 100)}
+          >
+            Show more
+          </Button>
+        )}
       </Container>
     </Modal>
   );

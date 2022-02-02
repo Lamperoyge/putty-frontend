@@ -5,9 +5,11 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { Button } from "../../core/Button";
 import { Title } from "../../core/Title";
 import { v4 as uuidv4 } from "uuid";
-import { TokenInputModal } from "../../core/TokenInputModal";
 import Image from "next/image";
-import { NftInputModal } from "../../core/NftInputModal";
+import {
+  NftCollectionInput,
+  NftInputModal,
+} from "../../core/NftCollectionInput";
 import { FetchWrapper } from "use-nft";
 import { ethers } from "ethers";
 import { useConnect, useSignMessage } from "wagmi";
@@ -16,6 +18,9 @@ import { ApproveButton } from "../../core/ApproveButton";
 import contracts from "../../../contracts.json";
 import { usePutOption } from "../../../hooks/usePutOption";
 import { TokenListContext } from "../../../context/TokenListContext";
+import { NftTokenInput } from "../../core/NftTokenInput";
+import { Erc20TokenInput } from "../../core/Erc20TokenInput";
+import { Erc20TokenAmountInput } from "../../core/Erc20TokenAmountInput";
 
 const Container = styled.div`
   width: 500px;
@@ -32,6 +37,26 @@ const Container = styled.div`
 
   label {
     font-weight: bold;
+  }
+
+  .token-input {
+    width: 100%;
+
+    .bin {
+      display: none !important;
+      margin-left: 12px;
+    }
+
+    &:hover {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+
+      .bin {
+        display: block !important;
+        cursor: pointer;
+      }
+    }
   }
 
   .number-input {
@@ -52,72 +77,6 @@ const Container = styled.div`
 
     .buttons {
       display: flex;
-    }
-  }
-
-  .erc721-input {
-    display: grid;
-    grid-template-columns: auto 1fr auto auto;
-    align-items: center;
-
-    > input {
-      margin-left: 12px;
-      margin-right: 12px;
-      width: auto;
-    }
-
-    .bin {
-      display: none !important;
-    }
-
-    &:hover {
-      .bin {
-        display: block !important;
-        cursor: pointer;
-      }
-    }
-
-    button {
-      align-items: center;
-      display: flex;
-      justify-content: center;
-      text-align: center;
-      img {
-        margin-right: 12px;
-      }
-    }
-  }
-
-  .erc20-input {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-
-    > input {
-      margin-left: 12px;
-      margin-right: 12px;
-      width: auto;
-    }
-
-    .bin {
-      display: none !important;
-    }
-
-    &:hover {
-      .bin {
-        display: block !important;
-        cursor: pointer;
-      }
-    }
-
-    button {
-      align-items: center;
-      display: flex;
-      justify-content: center;
-      text-align: center;
-      img {
-        margin-right: 12px;
-      }
     }
   }
 `;
@@ -170,112 +129,19 @@ const useUnderlyingAssets = () => {
 };
 
 const UnderlyingAssetInput = ({ value, removeUnderlyingAsset, onChange }) => {
-  const [isShown, setIsShown] = useState(false);
-  const [nftImageSrc, setNftImageSrc] = useState();
-  const { fetchWrapper } = useContext(TokenListContext);
+  return (
+    <div className="token-input">
+      {value.type === "ERC20" ? (
+        <Erc20TokenAmountInput value={value} onChange={onChange} />
+      ) : (
+        <NftTokenInput value={value} onChange={onChange} />
+      )}
 
-  useEffect(async () => {
-    if (value?.type === "ERC721" && value?.selectedAsset && fetchWrapper) {
-      const result = await fetchWrapper.fetchNft(
-        value.selectedAsset.address,
-        value.tokenId || 1
-      );
-
-      setNftImageSrc(result.image);
-    }
-  }, [value, fetchWrapper]);
-
-  if (value.type === "ERC20") {
-    return (
-      <div className="erc20-input">
-        {value?.selectedAsset ? (
-          <Button secondary onClick={() => setIsShown(true)}>
-            <img
-              alt={"logo"}
-              src={value.selectedAsset.logoURI}
-              height={25}
-              width={25}
-            />
-            {value.selectedAsset.symbol}
-          </Button>
-        ) : (
-          <Button secondary onClick={() => setIsShown(true)}>
-            Select a token
-          </Button>
-        )}
-
-        <Input
-          placeholder="Enter token amount (e.g. 12.31)"
-          type="number"
-          onChange={(e) => {
-            const amount = e.target.value;
-            onChange({ ...value, amount });
-          }}
-        />
-
-        <div className="bin" onClick={() => removeUnderlyingAsset(value.id)}>
-          <Image alt={"delete"} src="/bin.svg" height={30} width={30} />
-        </div>
-
-        <TokenInputModal
-          onChange={(selectedAsset) => onChange({ ...value, selectedAsset })}
-          isShown={isShown}
-          onClose={() => setIsShown(false)}
-        />
+      <div className="bin" onClick={() => removeUnderlyingAsset(value.id)}>
+        <Image alt={"delete"} src="/bin.svg" height={30} width={30} />
       </div>
-    );
-  }
-
-  if (value.type === "ERC721") {
-    return (
-      <div className="erc721-input">
-        {value?.selectedAsset ? (
-          <Button secondary onClick={() => setIsShown(true)}>
-            <img
-              alt={"logo"}
-              src={value.selectedAsset.logoURI}
-              height={25}
-              width={25}
-            />
-            {value.selectedAsset.name}
-          </Button>
-        ) : (
-          <Button secondary onClick={() => setIsShown(true)}>
-            Select an NFT
-          </Button>
-        )}
-
-        <Input
-          placeholder="Enter token ID"
-          type="number"
-          onChange={(e) => {
-            const tokenId = parseInt(e.target.value);
-            onChange({ ...value, tokenId });
-          }}
-        />
-
-        <img
-          alt={"nft-picture"}
-          className="nft-picture"
-          src={nftImageSrc}
-          height={50}
-        />
-
-        <div className="bin" onClick={() => removeUnderlyingAsset(value.id)}>
-          <Image alt={"delete"} src="/bin.svg" height={30} width={30} />
-        </div>
-
-        <NftInputModal
-          onChange={(selectedAsset) => onChange({ ...value, selectedAsset })}
-          isShown={isShown}
-          onClose={() => setIsShown(false)}
-        />
-      </div>
-    );
-  }
-
-  console.error("Invalid asset type", asset.type);
-  return <div></div>;
+    </div>
+  );
 };
 
 export const CreateContractModal = ({ isShown, onClose }) => {
