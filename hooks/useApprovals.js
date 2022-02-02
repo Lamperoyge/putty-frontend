@@ -1,6 +1,5 @@
 import { constants, Contract } from "ethers";
-import { useState } from "react";
-import { useEffect } from "react/cjs/react.development";
+import { useEffect, useState } from "react";
 import { useAccount, useBlockNumber, useProvider, useSigner } from "wagmi";
 import contracts from "../contracts.json";
 
