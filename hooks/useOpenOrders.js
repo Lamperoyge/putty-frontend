@@ -10,7 +10,6 @@ export const useOpenOrders = () => {
   const [rawOpenOrders, setRawOpenOrders] = useState([]);
   const [gotAllOrders, setGotAllOrders] = useState(false);
 
-  console.log("LAST DOCrtsrst", lastDoc);
   const {
     status,
     data: lastOrders,

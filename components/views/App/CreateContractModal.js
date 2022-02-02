@@ -173,7 +173,7 @@ export const CreateContractModal = ({ isShown, onClose }) => {
             <div>No assets...</div>
           ) : (
             underlyingAssets.map((value) => (
-              <div className="token-input">
+              <div className="token-input" key={value.id}>
                 {value.type === "ERC20" ? (
                   <Erc20TokenAmountInput
                     value={value}
