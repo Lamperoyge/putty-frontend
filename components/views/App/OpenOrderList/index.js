@@ -16,7 +16,7 @@ export const OpenOrderList = () => {
   return (
     <Container>
       {openOrders?.map((order) => (
-        <OpenOrderListItem order={order} />
+        <OpenOrderListItem order={order} key={order.orderHash} />
       ))}
     </Container>
   );
