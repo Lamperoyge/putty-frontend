@@ -14,7 +14,7 @@ const Container = styled(Button)`
   }
 `;
 
-export const ApproveButton = ({ tokens, children }) => {
+export const ApproveButton = ({ tokens, children, ...props }) => {
   const [unapprovedTokens, isLoading] = useApprovals(tokens);
 
   return unapprovedTokens?.length ? (
@@ -23,6 +23,6 @@ export const ApproveButton = ({ tokens, children }) => {
       {isLoading && <Spinner color={"white"} />}
     </Container>
   ) : (
-    <Button>{children}</Button>
+    <Button {...props}>{children}</Button>
   );
 };

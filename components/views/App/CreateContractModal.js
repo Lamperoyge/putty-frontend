@@ -5,16 +5,16 @@ import { useCallback, useEffect, useState } from "react";
 import { Button } from "../../core/Button";
 import { Title } from "../../core/Title";
 import { v4 as uuidv4 } from "uuid";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { TokenInputModal } from "../../core/TokenInputModal";
 import Image from "next/image";
 import { NftInputModal } from "../../core/NftInputModal";
 import { FetchWrapper } from "use-nft";
 import { ethers } from "ethers";
-import { useConnect } from "wagmi";
+import { useConnect, useSignMessage } from "wagmi";
 import { ConnectWalletButton } from "../../core/ConnectWalletButton";
 import { ApproveButton } from "../../core/ApproveButton";
 import contracts from "../../../contracts.json";
+import { usePutOption } from "../../../hooks/usePutOption";
 
 const Container = styled.div`
   width: 500px;
@@ -292,6 +292,26 @@ export const CreateContractModal = ({ isShown, onClose }) => {
     updateUnderlyingAsset,
   ] = useUnderlyingAssets();
 
+  const { submitPutOption, error } = usePutOption({
+    strike: strikePrice,
+    premium: premiumPrice,
+    duration,
+    erc20Underlying: underlyingAssets
+      .filter(({ type, selectedAsset }) => type === "ERC20" && selectedAsset)
+      .map(({ selectedAsset: { address }, amount }) => ({
+        token: address,
+        amount,
+      })),
+    erc721Underlying: underlyingAssets
+      .filter(({ type, selectedAsset }) => type === "ERC721" && selectedAsset)
+      .map(({ selectedAsset: { address }, tokenId }) => ({
+        token: address,
+        tokenId,
+      })),
+  });
+
+  console.log(error);
+
   return (
     <Modal
       isShown={isShown}
@@ -330,6 +350,7 @@ export const CreateContractModal = ({ isShown, onClose }) => {
         <div className="number-input">
           <label>Strike Price (ETH)</label>
           <Input
+            error={error.strike === false}
             value={strikePrice}
             onChange={(e) =>
               e.target.value >= 0 && setStrikePrice(e.target.value)
@@ -341,6 +362,7 @@ export const CreateContractModal = ({ isShown, onClose }) => {
         <div className="number-input">
           <label>Premium Price (ETH)</label>
           <Input
+            error={error.duration === false}
             placeholder="0.1 ETH"
             type="number"
             value={premiumPrice}
@@ -352,6 +374,7 @@ export const CreateContractModal = ({ isShown, onClose }) => {
         <div className="number-input">
           <label>Duration (Days)</label>
           <Input
+            error={error.duration === false}
             placeholder="7 days"
             type="number"
             value={duration && parseInt(duration)}
@@ -368,6 +391,7 @@ export const CreateContractModal = ({ isShown, onClose }) => {
           <ConnectWalletButton />
         ) : (
           <ApproveButton
+            onClick={() => submitPutOption()}
             tokens={[
               {
                 address: contracts.contracts.WETH9.address,

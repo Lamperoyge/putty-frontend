@@ -2,12 +2,13 @@ import Head from "next/head";
 import styled from "styled-components";
 import { Header } from "../../layout/Header";
 import { InputBar } from "./InputBar";
+import { OpenOrderList } from "./OpenOrderList";
 
 const Container = styled.main`
   min-height: 100vh;
   padding: 0px 48px;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto 1fr;
   row-gap: 48px;
 `;
 
@@ -26,6 +27,7 @@ export const App = () => {
       <Container>
         <Header />
         <InputBar />
+        <OpenOrderList />
       </Container>
     </div>
   );
