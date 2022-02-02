@@ -46,10 +46,7 @@ export const usePutOption = (option) => {
       allNftAreSet: option.erc721Underlying.every(({ tokenId }) => tokenId > 0),
     };
 
-    console.log(error);
     setError(Object.values(error).some((v) => !v) ? error : null);
-
-    console.log(option);
 
     if (Object.values(error).some((v) => !v)) {
       return;
@@ -68,6 +65,7 @@ export const usePutOption = (option) => {
         [option.erc721Underlying.map((v) => [v.token, v.tokenId])]
       )
     );
+
     const orderHash = keccak256(
       defaultAbiCoder.encode(optionTypes, [
         domainSeparatorV4,
@@ -83,10 +81,13 @@ export const usePutOption = (option) => {
 
     const signature = await signer.signMessage(arrayify(orderHash));
 
+    console.log("submtting");
+
     const dbRes = await db.collection("put-orders").add({
       ...option,
       orderHash,
       signature,
+      creationTimestamp: Date.now(),
     });
 
     console.log("res", dbRes);

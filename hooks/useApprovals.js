@@ -34,8 +34,6 @@ export const useApprovals = (tokens) => {
             }))
           )
         );
-
-        console.log("res", res);
       }
     };
 
@@ -90,7 +88,7 @@ export const useApprovals = (tokens) => {
                 );
               };
 
-              return [false, { ...token, symbol, approveToken }];
+              return [isApproved, { ...token, symbol, approveToken }];
             }
           })
         );
