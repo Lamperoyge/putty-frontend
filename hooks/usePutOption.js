@@ -52,6 +52,14 @@ export const usePutOption = (option) => {
       return;
     }
 
+    console.log(
+      "input",
+      option.erc20Underlying.map((v) => [v.token, v.amount]),
+      option.erc721Underlying.map((v) => [v.token, v.tokenId]),
+
+      error
+    );
+
     const hashedErc20Underlying = keccak256(
       defaultAbiCoder.encode(
         ["(address, uint)[]"],
@@ -64,6 +72,17 @@ export const usePutOption = (option) => {
         ["(address, uint)[]"],
         [option.erc721Underlying.map((v) => [v.token, v.tokenId])]
       )
+    );
+
+    console.log(
+      "has input",
+      option.strike,
+      option.duration,
+      option.premium,
+      option.owner,
+      option.nonce,
+      hashedErc20Underlying,
+      hashedErc721Underlying
     );
 
     const orderHash = keccak256(

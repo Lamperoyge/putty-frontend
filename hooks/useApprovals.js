@@ -17,7 +17,7 @@ export const useApprovals = (tokens) => {
       const approvalTxHashes = Object.values(isApproving)
         .map(Object.entries)
         .flat()
-        .filter((v) => v);
+        .filter(([address, txHash]) => txHash);
 
       console.log(signer);
       console.log("hashes", approvalTxHashes);
