@@ -5,7 +5,7 @@ import contracts from "../contracts.json";
 import { db } from "../firebase.js";
 
 export const usePutOption = (option) => {
-  const [error, setError] = useState({});
+  const [error, setError] = useState();
   const [{ data: account }] = useAccount();
   const [{ data: signer }] = useSigner();
   const [{ data: domainSeparatorV4 }] = useContractRead(
@@ -17,6 +17,11 @@ export const usePutOption = (option) => {
   );
 
   const submitPutOption = async () => {
+    option.owner = account.address;
+    option.nonce = parseInt(Math.floor(Math.random() * 1_000_000_000));
+
+    setError();
+
     const optionTypes = [
       "bytes32",
       "uint",
@@ -37,9 +42,14 @@ export const usePutOption = (option) => {
       hasUnderlying: Boolean(
         option.erc20Underlying.length || option.erc721Underlying.length
       ),
+      allErc20AreSet: option.erc20Underlying.every(({ amount }) => amount > 0),
+      allNftAreSet: option.erc721Underlying.every(({ tokenId }) => tokenId > 0),
     };
 
-    setError(error);
+    console.log(error);
+    setError(Object.values(error).some((v) => !v) ? error : null);
+
+    console.log(option);
 
     if (Object.values(error).some((v) => !v)) {
       return;
@@ -58,10 +68,6 @@ export const usePutOption = (option) => {
         [option.erc721Underlying.map((v) => [v.token, v.tokenId])]
       )
     );
-
-    option.owner = account.address;
-    option.nonce = parseInt(Math.floor(Math.random() * 1_000_000_000));
-
     const orderHash = keccak256(
       defaultAbiCoder.encode(optionTypes, [
         domainSeparatorV4,

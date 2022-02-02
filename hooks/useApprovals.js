@@ -2,6 +2,7 @@ import { constants, Contract } from "ethers";
 import { useEffect, useState } from "react";
 import { useAccount, useBlockNumber, useProvider, useSigner } from "wagmi";
 import contracts from "../contracts.json";
+import { useLocalStorage } from "./useLocalStorage";
 
 export const useApprovals = (tokens) => {
   const [{ loading, data: signer }] = useSigner();
@@ -9,6 +10,37 @@ export const useApprovals = (tokens) => {
   const [unapprovedTokens, setUnapprovedTokens] = useState();
   const [isLoading, setIsLoading] = useState();
   const [{ data: blockNumber }] = useBlockNumber({ watch: true });
+  const [isApproving, setIsApproving] = useLocalStorage("isApproving", {});
+
+  useEffect(() => {
+    const startIsApprovingListeners = async () => {
+      const approvalTxHashes = Object.values(isApproving)
+        .map(Object.entries)
+        .flat()
+        .filter((v) => v);
+
+      console.log(signer);
+      console.log("hashes", approvalTxHashes);
+
+      if (signer) {
+        const res = approvalTxHashes.map(([address, txHash]) =>
+          signer.provider.waitForTransaction(txHash).then(() =>
+            setIsApproving((old) => ({
+              ...old,
+              [account.address]: {
+                ...old[account.address],
+                [address]: false,
+              },
+            }))
+          )
+        );
+
+        console.log("res", res);
+      }
+    };
+
+    startIsApprovingListeners();
+  }, [signer]);
 
   useEffect(() => {
     const getUnapprovedTokens = async () => {
@@ -33,15 +65,32 @@ export const useApprovals = (tokens) => {
 
               const isApproved = allowance.gt(constants.MaxUint256.div("2"));
 
-              const approveToken = () => {
-                setIsLoading(true);
-                Token.approve(
+              const approveToken = async () => {
+                const tx = await Token.approve(
                   contracts.contracts.Backspread.address,
                   constants.MaxUint256
-                ).finally(() => setIsLoading(false));
+                );
+
+                setIsApproving((old) => ({
+                  ...old,
+                  [account.address]: {
+                    ...old[account.address],
+                    [address]: tx.hash,
+                  },
+                }));
+
+                tx.wait().finally(() =>
+                  setIsApproving((old) => ({
+                    ...old,
+                    [account.address]: {
+                      ...old[account.address],
+                      [address]: false,
+                    },
+                  }))
+                );
               };
 
-              return [isApproved, { ...token, symbol, approveToken }];
+              return [false, { ...token, symbol, approveToken }];
             }
           })
         );
@@ -57,5 +106,5 @@ export const useApprovals = (tokens) => {
     getUnapprovedTokens();
   }, [signer, account?.address, blockNumber]);
 
-  return [unapprovedTokens, isLoading];
+  return [unapprovedTokens, isApproving, isLoading];
 };

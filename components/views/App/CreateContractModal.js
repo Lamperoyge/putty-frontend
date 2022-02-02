@@ -82,7 +82,8 @@ const Container = styled.div`
 `;
 
 const InformationContainer = styled.div`
-  background-color: rgba(72, 149, 239, 0.2);
+  background-color: ${({ error }) =>
+    error ? "rgba(255, 0, 0, 0.2)" : "rgba(72, 149, 239, 0.2)"};
   padding: 12px;
   color: black;
   line-height: 24px;
@@ -106,8 +107,6 @@ const useUnderlyingAssets = () => {
     [underlyingAssets]
   );
 
-  console.log(underlyingAssets);
-
   const updateUnderlyingAsset = useCallback(
     (newValue, idToChange) => {
       setUnderlyingAssets((oldAssets) => {
@@ -128,22 +127,6 @@ const useUnderlyingAssets = () => {
   ];
 };
 
-const UnderlyingAssetInput = ({ value, removeUnderlyingAsset, onChange }) => {
-  return (
-    <div className="token-input">
-      {value.type === "ERC20" ? (
-        <Erc20TokenAmountInput value={value} onChange={onChange} />
-      ) : (
-        <NftTokenInput value={value} onChange={onChange} />
-      )}
-
-      <div className="bin" onClick={() => removeUnderlyingAsset(value.id)}>
-        <Image alt={"delete"} src="/bin.svg" height={30} width={30} />
-      </div>
-    </div>
-  );
-};
-
 export const CreateContractModal = ({ isShown, onClose }) => {
   const [strikePrice, setStrikePrice] = useState();
   const [premiumPrice, setPremiumPrice] = useState();
@@ -161,20 +144,20 @@ export const CreateContractModal = ({ isShown, onClose }) => {
     premium: premiumPrice,
     duration,
     erc20Underlying: underlyingAssets
-      .filter(({ type, selectedAsset }) => type === "ERC20" && selectedAsset)
-      .map(({ selectedAsset: { address }, amount }) => ({
+      .filter(({ type, token }) => type === "ERC20" && token)
+      .map(({ token: { address }, amount }) => ({
         token: address,
         amount,
       })),
     erc721Underlying: underlyingAssets
-      .filter(({ type, selectedAsset }) => type === "ERC721" && selectedAsset)
-      .map(({ selectedAsset: { address }, tokenId }) => ({
+      .filter(({ type, collection }) => type === "ERC721" && collection)
+      .map(({ collection: { address }, tokenId }) => ({
         token: address,
         tokenId,
       })),
   });
 
-  console.log(error);
+  console.error(error);
 
   return (
     <Modal
@@ -189,13 +172,27 @@ export const CreateContractModal = ({ isShown, onClose }) => {
           {!underlyingAssets.length ? (
             <div>No assets...</div>
           ) : (
-            underlyingAssets.map((asset) => (
-              <UnderlyingAssetInput
-                removeUnderlyingAsset={removeUnderlyingAsset}
-                value={asset}
-                onChange={(v) => updateUnderlyingAsset(v, asset.id)}
-                key={asset.id}
-              />
+            underlyingAssets.map((value) => (
+              <div className="token-input">
+                {value.type === "ERC20" ? (
+                  <Erc20TokenAmountInput
+                    value={value}
+                    onChange={(v) => updateUnderlyingAsset(v, value.id)}
+                  />
+                ) : (
+                  <NftTokenInput
+                    value={value}
+                    onChange={(v) => updateUnderlyingAsset(v, value.id)}
+                  />
+                )}
+
+                <div
+                  className="bin"
+                  onClick={() => removeUnderlyingAsset(value.id)}
+                >
+                  <Image alt={"delete"} src="/bin.svg" height={30} width={30} />
+                </div>
+              </div>
             ))
           )}
 
@@ -214,7 +211,7 @@ export const CreateContractModal = ({ isShown, onClose }) => {
         <div className="number-input">
           <label>Strike Price (ETH)</label>
           <Input
-            error={error.strike === false}
+            error={error?.strike === false}
             value={strikePrice}
             onChange={(e) =>
               e.target.value >= 0 && setStrikePrice(e.target.value)
@@ -226,7 +223,7 @@ export const CreateContractModal = ({ isShown, onClose }) => {
         <div className="number-input">
           <label>Premium Price (ETH)</label>
           <Input
-            error={error.duration === false}
+            error={error?.duration === false}
             placeholder="0.1 ETH"
             type="number"
             value={premiumPrice}
@@ -238,7 +235,7 @@ export const CreateContractModal = ({ isShown, onClose }) => {
         <div className="number-input">
           <label>Duration (Days)</label>
           <Input
-            error={error.duration === false}
+            error={error?.duration === false}
             placeholder="7 days"
             type="number"
             value={duration && parseInt(duration)}
@@ -250,6 +247,13 @@ export const CreateContractModal = ({ isShown, onClose }) => {
           You pay <b>{premiumPrice} ETH</b> and receive an option to sell your
           assets for <b>{strikePrice} ETH</b> within <b>{duration} days</b>
         </InformationContainer>
+
+        {error && (
+          <InformationContainer error>
+            <b>Failed to submit order</b>
+            <br /> Are you sure you have filled in all of the fields?
+          </InformationContainer>
+        )}
 
         {!data?.connected ? (
           <ConnectWalletButton />
